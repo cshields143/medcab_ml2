@@ -1,14 +1,16 @@
 import re
 import cloudpickle
 
-fh = open('data/word_vect.pkl', 'rb')
-word_vect = cloudpickle.loads(fh.read())
-
 fh = open('data/ml_model.pkl', 'rb')
 model = cloudpickle.loads(fh.read())
 
+def run_search(q):
+	probs = model.predict_proba([q])[0]
+	lbld = list(zip(model.classes_, probs))
+	lbld.sort(key=lambda x: x[1], reverse=True)
+	strains = [x[0] for x in lbld]
+	return strains[:10]
+
 if __name__ == '__main__':
-	egq = 'indica giggly happy'
-	in_vec = word_vect.transform([egq])
-	probs = model.predict_proba(in_vec)
-	print(probs)
+	print(run_search('indica giggly happy'))
+	print(run_search('frowny mean stupid'))
